@@ -14,7 +14,7 @@ cd build
 
 ln -s ../lunus_proxy.h .
 
-export CFLAGS="-g -O3 -fopenmp -fPIC -DUSE_OPENMP -DUSE_OFFLOAD -I. -L."
+export CFLAGS="-g -O3 -fopenmp -fPIC -DUSE_OPENMP -DUSE_OFFLOAD -DLUNUS_TEAMS=128 -DLUNUS_THREADS=32 -I. -L."
 
 ${CC} $CFLAGS -c ../llunus_proxy.c
 
@@ -33,9 +33,9 @@ nvprof --print-gpu-trace ./lunus_proxy ../snc_newhead_00001.img out.img
 
 cd -
 
-diff build/out.img ./out.img
-if [ $? == 0 ]; then
-  echo && echo "Test passed."
-else
-  echo && echo "Test failed."
-fi
+#diff build/out.img ./out.img
+#if [ $? == 0 ]; then
+#  echo && echo "Test passed."
+#else
+#  echo && echo "Test failed."
+#fi

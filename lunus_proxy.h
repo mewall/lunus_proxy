@@ -16,6 +16,13 @@
 #define SMV_MAX SHRT_MAX
 #define SMV_MIN SHRT_MIN
 
+#ifndef LUNUS_TEAMS
+#define LUNUS_TEAMS 64
+#endif
+#ifndef LUNUS_THREADS
+#define LUNUS_THREADS 32
+#endif
+
 typedef short RCCOORDS_DATA;
 typedef short IMAGE_DATA_TYPE;
 typedef short SMV_DATA_TYPE;
