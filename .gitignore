@@ -1,0 +1,7 @@
+*~
+*.o
+*.so
+*.a
+\#*
+build
+modeim_reproducer
