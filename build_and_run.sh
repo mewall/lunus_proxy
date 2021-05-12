@@ -27,6 +27,9 @@ elif [[ $1 == "static" ]];then
     ${CC} $CFLAGS -o lunus_proxy ../lunus_proxy.c -llunus_proxy_static  
 elif [[ $1 == "nolib" ]];then
     ${CC} $CFLAGS -o lunus_proxy ../lunus_proxy.c llunus_proxy.o
+else # Assume static
+    ar rc liblunus_proxy_static.a llunus_proxy.o
+    ${CC} $CFLAGS -o lunus_proxy ../lunus_proxy.c -llunus_proxy_static  
 fi
 echo "Running application"
 nvprof --print-gpu-trace ./lunus_proxy ../snc_newhead_00001.img out.img
