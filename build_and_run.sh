@@ -14,7 +14,8 @@ cd build
 
 ln -s ../lunus_proxy.h .
 
-export CFLAGS="-g -O3 -fopenmp -fPIC -DUSE_OPENMP -DUSE_OFFLOAD -DLUNUS_TEAMS=128 -DLUNUS_THREADS=32 -I. -L."
+#export CFLAGS="-g -O3 -fopenmp -fPIC -DUSE_OPENMP -DLUNUS_TEAMS=128 -DLUNUS_THREADS=32 -DDEBUG -I. -L."
+export CFLAGS="-g -O3 -fopenmp -fPIC -DUSE_OPENMP -DUSE_OFFLOAD -DLUNUS_TEAMS=128 -DLUNUS_THREADS=32 -DDEBUG -I. -L."
 
 ${CC} $CFLAGS -c ../llunus_proxy.c
 

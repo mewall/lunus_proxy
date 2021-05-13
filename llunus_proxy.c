@@ -317,22 +317,22 @@ int lmodeim(DIFFIMAGE *imdiff_in)
   hpixels = imdiff->hpixels;
   vpixels = imdiff->vpixels;
 
-    //    printf("MODEIM: Allocating arrays\n");
+  //    printf("MODEIM: Allocating arrays\n");
 
-    image = (IMAGE_DATA_TYPE *)calloc(image_length,sizeof(IMAGE_DATA_TYPE));
-    image_mode = (size_t *)calloc(image_length,sizeof(size_t));
-    window = (size_t *)calloc(wlen*num_teams*num_threads,sizeof(size_t));
-    stack = (size_t *)calloc(wlen*num_teams*num_threads,sizeof(size_t));
+  image = (IMAGE_DATA_TYPE *)calloc(image_length,sizeof(IMAGE_DATA_TYPE));
+  image_mode = (size_t *)calloc(image_length,sizeof(size_t));
+  window = (size_t *)calloc(wlen*num_teams*num_threads,sizeof(size_t));
+  stack = (size_t *)calloc(wlen*num_teams*num_threads,sizeof(size_t));
 
-    /* 
-     * Allocate working mode filetered image: 
-     */ 
+  /* 
+   * Allocate working mode filetered image: 
+   */ 
   
-    if (!image || !image_mode || !window || !stack) {
-      sprintf(imdiff->error_msg,"\nLMODEIM:  Couldn't allocate arrays.\n\n");
-      return_value = 1;
-      goto CloseShop;
-    }
+  if (!image || !image_mode || !window || !stack) {
+    sprintf(imdiff->error_msg,"\nLMODEIM:  Couldn't allocate arrays.\n\n");
+    return_value = 1;
+    goto CloseShop;
+  }
 
 #ifdef USE_OFFLOAD
 #pragma omp target enter data map(alloc:image[0:image_length],image_mode[0:image_length])
@@ -343,7 +343,7 @@ int lmodeim(DIFFIMAGE *imdiff_in)
   //  printf("LMODEIM: mode_height = %d, mode_width = %d, num_panels = %d\n",imdiff_in->mode_height,imdiff_in->mode_width,imdiff_in->num_panels);
 
   for (pidx = 0; pidx < imdiff_in->num_panels; pidx++) {
-    size_t num_mode_values=0, num_median_values=0, num_med90_values=0, num_this_values=0;
+    size_t num_mode_values=0, num_median_values=0, num_med90_values=0, num_this_values=0, num_ignored_values=0;
     imdiff = &imdiff_in[pidx];
     if (pidx != imdiff->this_panel) {
       perror("LMODEIM: Image panels are not indexed sequentially. Aborting\n");
@@ -404,12 +404,16 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 
 #ifdef USE_OPENMP
 #ifdef USE_OFFLOAD
-#pragma omp target map(to:minval,binsize,wlen,overload_tag,ignore_tag,num_teams,num_threads) 
-#pragma omp teams
-#pragma omp distribute parallel for collapse(2) schedule(static,1)
+#pragma omp target map(to:minval,binsize,wlen,overload_tag,ignore_tag,num_teams,num_threads) \
+        map(tofrom:num_mode_values, num_median_values, num_med90_values, num_this_values,num_ignored_values)
+#pragma omp teams distribute parallel for collapse(2) schedule(static,1) \
+  private(i,j,tm,th)							\
+  reduction(+:num_mode_values, num_median_values, num_med90_values, num_this_values,num_ignored_values)
 #else
     //#pragma omp distribute parallel for collapse(2)
-#pragma omp parallel for shared(stack,window,image,image_mode) private(i,j,th)
+#pragma omp parallel for shared(stack,window,image,image_mode) \
+  private(i,j,tm,th)							\
+  reduction(+:num_mode_values, num_median_values, num_med90_values, num_this_values,num_ignored_values)
 #endif
 #endif
     for (tm = 0; tm < num_teams; tm++) {
@@ -456,6 +460,7 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 	    }
 	    if (l == 0 || image[index_mode] == ignore_tag || image[index_mode] == overload_tag || image[index_mode] >= MAX_IMAGE_DATA_VALUE) {
 	      image_mode[index_mode] = 0;
+	      num_ignored_values++;
 	    }
 	    else {
 	      //          printf("Starting quicksort for i=%d,j=%ld\n",i,index_mode/hpixels);
@@ -568,7 +573,7 @@ int lmodeim(DIFFIMAGE *imdiff_in)
     fflush(stdout);
 
 #ifdef DEBUG
-    printf("LMODEIM: %g seconds, num_mode_values=%ld,num_median_values=%ld,num_this_values=%ld,num_med90_values=%ld\n",tel,num_mode_values,num_median_values,num_this_values,num_med90_values);
+    printf("LMODEIM: %g seconds, num_mode_values=%ld,num_median_values=%ld,num_this_values=%ld,num_med90_values=%ld,num_ignored_values=%ld\n",tel,num_mode_values,num_median_values,num_this_values,num_med90_values,num_ignored_values);
 #endif
     
 #ifdef USE_OPENMP
