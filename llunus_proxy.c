@@ -138,6 +138,24 @@ double ltime() {
 #pragma omp declare target
 #endif
 
+static unsigned long x=123456789, y=362436069, z=521288629;
+
+// Code taken from xorshf96()
+
+unsigned long rand_local(void) {          //period 2^96-1
+unsigned long t;
+    x ^= x << 16;
+    x ^= x >> 5;
+    x ^= x << 1;
+
+   t = x;
+   x = y;
+   y = z;
+   z = t ^ x ^ y;
+
+  return z;
+}
+
 double log_local(double x) {
   int n,N=10,onefac=1;
   double y,xfac,f = 0.0;
@@ -526,7 +544,7 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 		    image_mode[index_mode] = this_value;
 		    num_this_values++;
 		  } else {
-		    image_mode[index_mode] = this_window[(size_t)(((double)k90*(double)rand())/(double)RAND_MAX)];
+		    image_mode[index_mode] = this_window[(size_t)(((double)k90*(double)rand_local())/(double)ULONG_MAX)];
 		    num_med90_values++;
 		  //	      printf("%d %ld %ld\n",kmed,mode_value,median_value);
 		  //	      mode_value = median_value;
