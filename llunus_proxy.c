@@ -485,7 +485,7 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 	quickSortIterative(this_window,this_stack,0,wlen-1);
       }
 	*/
-	
+      /*	
 #ifdef USE_OPENMP
 #ifdef USE_OFFLOAD
 #pragma omp target map(to:minval,binsize,wlen,overload_tag,ignore_tag,num_jblocks,num_iblocks, \
@@ -499,6 +499,7 @@ int lmodeim(DIFFIMAGE *imdiff_in)
   reduction(+:num_mode_values, num_median_values, num_med90_values, num_this_values,num_ignored_values)
 #endif
 #endif
+      */
       for (j = jlo; j < jhi; j=j+num_jblocks) {
 	for (i = ilo; i < ihi; i=i+num_iblocks) {
 	    int mode_ct = 0;

@@ -1,7 +1,7 @@
-module purge
-module use /projects/icapt/mewall/modules
-module load gcc/master
-module load cuda/10.2
+#module purge
+#module use /projects/icapt/mewall/modules
+#module load gcc/master
+#module load cuda/10.2
 
 CC=gcc
 
@@ -14,7 +14,8 @@ cd build
 
 ln -s ../lunus_proxy.h .
 
-export CFLAGS="-g -O3 -fopenmp -fPIC -DUSE_OPENMP -DUSE_OFFLOAD -DLUNUS_NUM_JBLOCKS=1 -DLUNUS_NUM_IBLOCKS=1 -DDEBUG -I. -L."
+#export CFLAGS="-g -O3 -fopenmp -fPIC -DUSE_OPENMP -DUSE_OFFLOAD -DLUNUS_NUM_JBLOCKS=1 -DLUNUS_NUM_IBLOCKS=1 -DDEBUG -I. -L."
+export CFLAGS="-g -O3 -fopenmp -fPIC -DUSE_OPENMP -DDEBUG -DLUNUS_NUM_JBLOCKS=1 -DLUNUS_NUM_IBLOCKS=1 -I. -L."
 
 ${CC} $CFLAGS -c ../llunus_proxy.c
 
@@ -32,7 +33,9 @@ else # Assume static
     ${CC} $CFLAGS -o lunus_proxy ../lunus_proxy.c -llunus_proxy_static  
 fi
 echo "Running application"
-nvprof --print-gpu-trace ./lunus_proxy ../snc_newhead_00001.img out.img
+OMP_NUM_THREADS=2 srun -n 1 -c 2 ./lunus_proxy ../snc_newhead_00001.img out_2.img
+OMP_NUM_THREADS=4 srun -n 1 -c 2 ./lunus_proxy ../snc_newhead_00001.img out_4.img
+#nvprof --print-gpu-trace ./lunus_proxy ../snc_newhead_00001.img out.img
 
 cd -
 
