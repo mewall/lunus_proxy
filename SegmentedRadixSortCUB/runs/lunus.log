@@ -1,0 +1,15 @@
+*************************************
+/global/homes/m/mewall/lcls/mewall/exafel/hackathon/SegmentedRadixSortCUB/runs
+cgpu04
+Sun Jul 18 13:55:44 PDT 2021
+*************************************
+CUDA error 700 [ll_lunus_proxy.cu, 410]: an illegal memory access was encountered
+
+Enters lunus_proxy.
+
+quickSortList: num_arrays, array_size = 1022121, 256
+arr[  0  ]=     29536 
+h_keys[  0  ]=     29536 
+*************************************
+Sun Jul 18 13:55:48 PDT 2021
+*************************************
