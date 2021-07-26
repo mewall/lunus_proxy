@@ -499,6 +499,8 @@ int lmodeim(DIFFIMAGE *imdiff_in)
     
   int pidx;
 
+  double tic, toc, tmkarr, tsort, tmkimg;
+
   size_t
     i,
     j;
@@ -614,6 +616,8 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 
     double start = ltime();
 
+    tic = ltime();
+
     for (jblock = 0; jblock < num_jblocks; jblock++) {
       for (iblock = 0; iblock < num_iblocks; iblock++) {
 	size_t jlo = half_height + jblock;
@@ -664,10 +668,18 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 	    *this_nval = l;
 	}
       }
+
+      toc = ltime();
+      tmkarr = toc - tic;
+
       //#ifdef USE_OFFLOAD
       //#pragma omp target map(to:wlen,num_per_jblock,num_per_iblock)  
       //#endif
+      tic = ltime();
       quickSortList(window,stack,num_per_iblock*num_per_jblock,wlen);
+      toc = ltime();
+      tsort = toc - tic;
+
 	/*
 #ifdef USE_OPENMP
 #ifdef USE_OFFLOAD
@@ -698,6 +710,7 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 #endif
 #endif
       */
+      tic = ltime();
       for (j = jlo; j < jhi; j=j+num_jblocks) {
 	for (i = ilo; i < ihi; i=i+num_iblocks) {
 	    int mode_ct = 0;
@@ -811,6 +824,12 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 	    //        printf("Stop tm = %ld,th = %ld,i = %d,j = %d\n",tm,th,i,j);
 	  }
 	}
+      toc = ltime();
+      tmkimg = toc - tic;
+#ifdef DEBUG
+      printf("iblock = %d, jblock = %d, tmkarr = %g secs, tsort = %g secs, tmkimg = %g secs",iblock,jblock,tmkarr,tsort,tmkimg);
+#endif
+
       }
     }
 
