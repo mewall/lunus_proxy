@@ -53,3 +53,4 @@ typedef struct
 int lreadim(DIFFIMAGE *imdiff);
 int lwriteim(DIFFIMAGE *imdiff);
 int lmodeim(DIFFIMAGE *imdiff_in);
+extern "C" void quickSortListCUB(size_t arr[], size_t stack[], size_t num_arrays, size_t array_size);
