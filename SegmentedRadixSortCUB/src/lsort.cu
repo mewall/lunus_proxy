@@ -1,17 +1,18 @@
 
 #define CUB_STDERR                                // ADDED -Pierre   line 2
 
-#include <stdio.h>                                // ADDED -Pierre   line 6
-#include <algorithm>                              // ADDED -Pierre   line 7
+//#include <stdio.h>                                // ADDED -Pierre   line 6
+//#include <algorithm>                              // ADDED -Pierre   line 7
 
 #include <cub/util_allocator.cuh>                 // ADDED -Pierre   line 9
 #include <cub/device/device_radix_sort.cuh>       // ADDED -Pierre   line 10
 
 #include <cub/device/device_segmented_radix_sort.cuh>     // SEGMENTED ADDED  -Pierre
 
-#include "test/test_util.h"                       // ADDED -Pierre   line 13
+//#include "test/test_util.h"                       // ADDED -Pierre   line 13
 
 using namespace cub;
+
 
 //---------------------------------------------------------------------
 // Globals, constants and typedefs
@@ -28,6 +29,7 @@ CachingDeviceAllocator  g_allocator(true);  // Caching allocator for device memo
  * Simple key pairing for floating point types.  Distinguishes
  * between positive and negative zero.
  */
+/*
 struct Pair
 {
     float   key;
@@ -49,10 +51,11 @@ struct Pair
     }
 };
 
-
+*/
 /**
  * Initialize key sorting problem.
  */
+/*
 void Initialize(
     float           *h_keys,
     float           *h_reference_keys,
@@ -84,6 +87,7 @@ void Initialize(
 
     delete[] h_pairs;
 }
+*/
 
 extern "C" void quickSortListCUB(size_t arr[], size_t stack[], size_t num_arrays, size_t array_size)
 {

@@ -415,7 +415,8 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 		       num_per_jblock,num_per_iblock,jlo,jhi,ilo,ihi) 
 #pragma omp teams distribute parallel for collapse(2) schedule(static,1)
 #else
-#pragma omp parallel for shared(stack,window,nvals,image,image_mode)
+#pragma omp parallel for shared(stack,window,nvals,image,image_mode) \
+  private(i,j)
 #endif
 #endif
       for (j = jlo; j < jhi; j=j+num_jblocks) {
@@ -496,6 +497,11 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 #endif
       */
       tic = ltime();
+#ifdef USE_OPENMP
+#pragma omp parallel for default(shared) \
+  private(i,j) \
+  reduction(+:num_mode_values, num_median_values, num_med90_values, num_this_values,num_ignored_values)
+#endif
       for (j = jlo; j < jhi; j=j+num_jblocks) {
 	for (i = ilo; i < ihi; i=i+num_iblocks) {
 	    int mode_ct = 0;
@@ -541,12 +547,12 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 	      }
 	      this_count = 1;
 	      last_value = this_window[0];
-	      double entropy = 0.0;
+	      double p, entropy = 0.0;
 	      for (k = 1; k < l; k++) {
 		if (this_window[k] == last_value) {
 		  this_count++;
 		} else {
-		  double p = (double)this_count/(double)l;
+		  p = (double)this_count/(double)l;
 		  entropy -=  p * log_local(p);
 		  last_value = this_window[k];
 		  this_count = 1;
@@ -557,11 +563,11 @@ int lmodeim(DIFFIMAGE *imdiff_in)
 		}
 	      }
 	      mode_value = (size_t)(((float)mode_value/(float)mode_ct) + .5);
-	      double p = (double)this_count/(double)l;
+	      p = (double)this_count/(double)l;
 	      entropy -=  p * log_local(p);
 	      //	  image_mode[index_mode] = (size_t)(((float)mode_value/(float)mode_ct) + .5);
 #ifdef DEBUG
-	      if (j == 2200 && i == 1800) {
+	      if (j == 600 && i == 600) {
 		printf("LMODEIM: entropy = %g, mode_ct = %d, mode_value = %ld, median_value = %ld, range_value = %ld, this_value = %ld, med90_value = %ld, kmed = %d, k90 = %d\n",entropy,mode_ct,mode_value,median_value,range_value,this_value,med90_value,kmed,k90);
 	      } 
 #endif 
