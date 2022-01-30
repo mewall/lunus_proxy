@@ -11,8 +11,8 @@
 #SBATCH --output=lunus.log
 # #SBATCH --exclusive
 
-module purge
-module load cuda gcc/9.3.0
+#module purge
+#module load cuda gcc/9.3.0
 #module load cgpu
 #module load PrgEnv-llvm/12.0.0-git_20200824
 #module switch cuda cuda/10.2.89
@@ -31,8 +31,8 @@ echo '*************************************'
 export OMP_NUM_THREADS=8
 
 # export LIBOMPTARGET_DEBUG=4
-#nsys nvprof ${LUNUS_PATH}/lunus_proxy ${IMAGE_PATH}/snc_newhead_00001.img out.img
-${LUNUS_PATH}/lunus_proxy ${IMAGE_PATH}/snc_newhead_00001.img out.img
+nsys nvprof ${LUNUS_PATH}/lunus_proxy ${IMAGE_PATH}/snc_newhead_00001.img out_cuda.img
+#${LUNUS_PATH}/lunus_proxy ${IMAGE_PATH}/snc_newhead_00001.img out.img
 
 echo '*************************************'
 date

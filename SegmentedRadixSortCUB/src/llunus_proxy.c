@@ -462,7 +462,13 @@ int lmodeim(DIFFIMAGE *imdiff_in)
       //#pragma omp target map(to:wlen,num_per_jblock,num_per_iblock)  
       //#endif
       tic = ltime();
+#ifdef USE_KOKKOS
+      printf("Performing quick sort in kokkos\n");
+      quickSortListKokkos(window,stack,num_per_iblock*num_per_jblock,wlen);
+      printf("Done with quick sort in kokkos\n");
+#else
       quickSortListCUB(window,stack,num_per_iblock*num_per_jblock,wlen);
+#endif
       toc = ltime();
       tsort = toc - tic;
 

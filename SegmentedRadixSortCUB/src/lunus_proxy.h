@@ -6,6 +6,7 @@
 #include<math.h>
 #include<errno.h>
 #include<limits.h>
+
 #ifdef USE_OPENMP
 #include<omp.h>
 #endif
@@ -53,4 +54,9 @@ typedef struct
 int lreadim(DIFFIMAGE *imdiff);
 int lwriteim(DIFFIMAGE *imdiff);
 int lmodeim(DIFFIMAGE *imdiff_in);
-extern "C" void quickSortListCUB(size_t arr[], size_t stack[], size_t num_arrays, size_t array_size);
+void quickSortListCUB(size_t arr[], size_t stack[], size_t num_arrays, size_t array_size);
+#ifdef USE_KOKKOS
+void kokkos_start (int narg, char *args[]);
+void kokkos_stop();
+void quickSortListKokkos(size_t arr[], size_t stack[], size_t num_arrays, size_t array_size);
+#endif

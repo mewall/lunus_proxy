@@ -8,7 +8,9 @@
 
    */
 
+extern "C" {
 #include "lunus_proxy.h"
+}
 
 int main(int argc, char *argv[])
 {
@@ -23,7 +25,12 @@ int main(int argc, char *argv[])
   int
     mask_size,
     binsize;
-/*
+
+#ifdef USE_KOKKOS
+  kokkos_start(argc,argv);
+#endif
+  
+  /*
  * Set input line defaults:
  */
 	
@@ -117,6 +124,8 @@ CloseShop:
   
   fclose(imagein);
   fclose(imageout);
-  
+#ifdef USE_KOKKOS
+  kokkos_stop();
+#endif
 }
 
